@@ -2,11 +2,13 @@
 
 simple gin restful API, GORM SQLite JWT is used
 
+## Prerequisites
+
+- go version 1.10
+
 ## Getting started
 
-This project requires Go to be installed. On OS X with Homebrew you can just run `brew install go`.
-
-Running it then should be as simple as:
+In the ubuntu 1804 environment, use `go get` to download the dependency package, compile and run it using the following command.
 
 ```console
 $ make
