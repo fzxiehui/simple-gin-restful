@@ -32,6 +32,11 @@ build:
 	@echo "GOPATH=${GOPATH}"
 	go build -ldflags "-X github.com/fzxiehui/simple-gin-restful/version.GitCommit=${GIT_COMMIT}${GIT_DIRTY} -X github.com/fzxiehui/simple-gin-restful/version.BuildDate=${BUILD_DATE}" -o bin/${BIN_NAME}
 
+
+build-arm64:
+	
+	GOOS=linux GOARCH=arm64 GOARM=7 go build -ldflags "-X github.com/fzxiehui/simple-gin-restful/version.GitCommit=${GIT_COMMIT}${GIT_DIRTY} -X github.com/fzxiehui/simple-gin-restful/version.BuildDate=${BUILD_DATE}" -o bin/arm64/${BIN_NAME}
+
 get-deps:
 	dep ensure
 

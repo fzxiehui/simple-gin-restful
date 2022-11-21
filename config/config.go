@@ -52,6 +52,9 @@ func readViperConfig(appName string) *viper.Viper {
 	
 	v.SetDefault("json_logs", false)
 	v.SetDefault("loglevel", "debug")
+
+	v.SetDefault("db.type", "sqlite")
+	v.SetDefault("db.url", "./simple-gin-restful.db")
 	
 
 	return v
