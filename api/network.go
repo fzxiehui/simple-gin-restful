@@ -101,14 +101,15 @@ func GetNetwork(c *gin.Context) {
 				gateway = strings.TrimSpace(string(out))
 
 				// get network interface dhcp 
-				cmd = "nmcli connection show " + words[0] + "_config"
+				cmd = "nmcli connection show " + words[0] + "_config | grep ipv4.method | awk '{print $2}'"
 				out, _ = exec.Command("bash", "-c", cmd).Output()
 				// string to line
 				dhcp := strings.Split(string(out), "\n")
 				// log.Println(dhcp)
 
 				// Error in dhcp[0] is "Error: Connection 'eth0_config' not found."
-				if strings.Contains(dhcp[0], "Error") {
+				if strings.Contains(dhcp[0], "auto") {
+				// if dhcp[0] == "auto" {
 					dhcp_tag = true
 				} else {
 					dhcp_tag = false
@@ -117,16 +118,18 @@ func GetNetwork(c *gin.Context) {
 
 		
 			var dns string = gateway
+
+			// dhcp client is not running
 			if !dhcp_tag {
 				// get network interface dns
 				cmd = "nmcli connection show " + words[0] + "_config | grep dns | awk '{print $2}'"
 				out, _ = exec.Command("bash", "-c", cmd).Output()
-				// if err != nil {
-				// 	c.JSON(http.StatusInternalServerError, gin.H{
-				// 		"message": err.Error(),
-				// 	})
-				// 	return
-				// }
+				if err != nil {
+					c.JSON(http.StatusInternalServerError, gin.H{
+						"message": err.Error(),
+					})
+					return
+				}
 				// string
 				dns = string(out)
 			}
@@ -156,5 +159,115 @@ func GetNetwork(c *gin.Context) {
 	// return
 	c.JSON(http.StatusOK, network_list.NetworkList)
 
+}
+
+
+// UpdateNetwork
+func UpdateNetwork(c *gin.Context) {
+	
+	var network model.Network
+	if err := c.ShouldBindJSON(&network); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
+		return
+	}
+	// del old network interface
+	cmd := "nmcli connection show"
+	out, err := exec.Command("bash", "-c", cmd).Output()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": err.Error(),
+		})
+		return
+	}
+	// string to line
+	lines := strings.Split(string(out), "\n")
+	// log.Println(lines)
+	for _, line := range lines {
+		// log.Println(line)
+		words := strings.Fields(line)
+		// log.Println(words)
+		if len(words) > 0 {
+			// log.Println(words[0])
+			if strings.Contains(words[0], network.Name) {
+				// log.Println(words[0])
+				cmd := "nmcli connection delete " + network.Name + "_config"
+				_, err = exec.Command("bash", "-c", cmd).Output()
+				if err != nil {
+					c.JSON(http.StatusInternalServerError, gin.H{
+						"message": err.Error(),
+					})
+					return
+				}
+				break
+			}
+		}
+	}
+
+	if network.DHCP {
+		// set network interface dhcp
+		// cmd := "nmcli connection modify " + network.Name + "_config ipv4.method auto"
+
+		// cmd := "nmcli connection add con-name " + 
+		// 			network.Name + 
+		// 			"_config type ethernet ifname " + 
+		// 			network.Name + 
+		// 			" ipv4.method auto"
+
+		// _, err := exec.Command("bash", "-c", cmd).Output()
+		// if err != nil {
+		// 	c.JSON(http.StatusInternalServerError, gin.H{
+		// 		"message": err.Error(),
+		// 	})
+		// 	return
+		// }
+
+		// // activate network interface
+		// cmd = "nmcli connection up " + network.Name + "_config"
+		// _, err = exec.Command("bash", "-c", cmd).Output()
+		// if err != nil {
+		// 	c.JSON(http.StatusInternalServerError, gin.H{
+		// 		"message": err.Error(),
+		// 	})
+		// 	return
+		// }
+
+		c.JSON(http.StatusOK, gin.H{
+			"message": "ok"})
+		return
+	}
+
+	// set network interface static
+	cmd = "nmcli connection add con-name " +
+				network.Name +
+				"_config type ethernet ifname " +
+				network.Name +
+				" ipv4.method manual ipv4.addresses " +
+				network.Inet +
+				" ipv4.gateway " +
+				network.Gateway +
+				" ipv4.dns " +
+				network.DNS
+
+	_, err = exec.Command("bash", "-c", cmd).Output()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": err.Error(),
+		})
+		return
+	}
+
+	// activate network interface
+	cmd = "nmcli connection up " + network.Name + "_config"
+	_, err = exec.Command("bash", "-c", cmd).Output()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "ok"})
+	return
 
 }

@@ -23,6 +23,7 @@ func V1API(r *gin.Engine) {
 
 		// network
 		v.GET("/network", api.GetNetwork)
+		v.PUT("/network", api.UpdateNetwork)
 	}
 
 }

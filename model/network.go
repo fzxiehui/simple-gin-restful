@@ -1,7 +1,7 @@
 package model
 
 type Network struct {
-	Name string `json:"name"`
+	Name string `json:"name" binding:"required"`
 	Operstate string `json:"operstate"`
 	Inet string `json:"inet"`
 	// Netmask string `json:"netmask"`
