@@ -32,6 +32,11 @@ func GetNetwork(c *gin.Context) {
 		if strings.Contains(line, "lo") {
 			continue
 		}
+		// conntinue if line is wifi
+		if strings.Contains(line, "wlan") {
+			continue
+		}
+
 		// split line to words
 		words := strings.Fields(line)
 		// log.Println(words)
