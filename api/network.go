@@ -271,6 +271,18 @@ func UpdateNetwork(c *gin.Context) {
 		return
 	}
 
+	// set network auto connect
+	cmd = "nmcli connection modify " + 
+										network.Name + 
+										"_config connection.autoconnect yes"
+	_, err = exec.Command("bash", "-c", cmd).Output()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": err.Error(),
+		})
+		return
+	}
+
 	c.JSON(http.StatusOK, gin.H{
 		"message": "ok"})
 	return

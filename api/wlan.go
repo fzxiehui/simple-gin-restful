@@ -79,7 +79,7 @@ func UpdateWlan(c *gin.Context) {
 	var cmd string
 	cmd = "nmcli connection show |grep ap"
 	out, err := exec.Command("bash", "-c", cmd).Output()
-	if strings.Contains(string(out), "ap") {
+	if strings.Contains(string(out), "unknown connection") {
 		cmd = "nmcli connection delete ap"
 		out, err = exec.Command("bash", "-c", cmd).Output()
 		if err != nil {
@@ -89,12 +89,25 @@ func UpdateWlan(c *gin.Context) {
 	}
 
 	// add new ap connection
-	cmd = "nmcli device wifi hotspot ifname wlan0 con-name ap ssid " + wlan.Ssid + " password " + wlan.Password
+	cmd = "nmcli device wifi hotspot ifname wlan0 con-name ap ssid " + 
+						wlan.Ssid + 
+						" password " + 
+						wlan.Password
+
 	out, err = exec.Command("bash", "-c", cmd).Output()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "add new ap connection failed"})
 		return
 	}
+
+	// set auto connect
+	cmd = "nmcli connection modify ap connection.autoconnect yes"
+	out, err = exec.Command("bash", "-c", cmd).Output()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "set auto connect failed"})
+		return
+	}
+
 
 	// return ok
 	c.JSON(http.StatusOK, gin.H{"message": "ok"})

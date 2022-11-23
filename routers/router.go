@@ -28,6 +28,13 @@ func V1API(r *gin.Engine) {
 		// wlan
 		v.GET("/wlan", api.GetWlan)
 		v.PUT("/wlan", api.UpdateWlan)
+
+		// sensor
+		v.GET("/sensor", api.GetSensor)
+		v.PUT("/sensor", api.UpdateSensor)
+
+		// system
+		v.GET("/system", api.GetSystem)
 	}
 
 }
