@@ -123,6 +123,7 @@ func GetNetwork(c *gin.Context) {
 
 		
 			var dns string = gateway
+			var dnslist []string
 
 			// dhcp client is not running
 			if !dhcp_tag {
@@ -135,8 +136,17 @@ func GetNetwork(c *gin.Context) {
 					})
 					return
 				}
-				// string
-				dns = string(out)
+				// string to line
+
+				dnslist = strings.Split(string(out), "\n")
+				for _, d := range dnslist {
+					if len(d) > 7 {
+						dns = strings.TrimSpace(d)
+						break
+					}
+				}
+
+				// dns = string(out)
 			}
 
 

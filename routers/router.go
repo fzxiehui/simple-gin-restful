@@ -40,8 +40,6 @@ func V1API(r *gin.Engine) {
 		// v.GET("/system/timezone", api.GetTimeZone)
 		v.PUT("/system/timezone", api.UpdateTimeZone)
 
-
-
 		// system -> uart
 		// v.GET("/system/uart", api.GetUart)
 		v.PUT("/system/uart", api.UpdateUart)
@@ -50,7 +48,12 @@ func V1API(r *gin.Engine) {
 		// v.GET("/system/mqtt", api.GetMqtt)
 		v.PUT("/system/mqtt", api.UpdateMqtt)
 
+		// system -> log
 		v.GET("/system/log", api.DownloadLog)
+		v.DELETE("/system/log", api.DeleteLog)
+
+		// system -> gateway
+		v.PUT("/system/gateway", api.RestartGateway)
 
 	}
 

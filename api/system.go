@@ -257,3 +257,35 @@ func DownloadLog(c *gin.Context) {
 	return
 
 }
+
+func DeleteLog(c *gin.Context) {
+	var cmd string
+	cmd = "rm -rf /root/work/info.log & " +
+					"rm -rf /root/work/errors.log & " +
+					"rm -rf /root/work/info.log.* & " +
+					"rm -rf /root/work/errors.log.*"
+	exec.Command("bash", "-c", cmd).Output()
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "delete log success",
+	})
+	return
+}
+
+
+func RestartGateway(c *gin.Context) {
+	var cmd string
+	cmd = "supervisorctl restart gateway"
+	_, err := exec.Command("bash", "-c", cmd).Output()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "restart gateway success",
+	})
+	return
+}
