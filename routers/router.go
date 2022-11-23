@@ -50,6 +50,8 @@ func V1API(r *gin.Engine) {
 		// v.GET("/system/mqtt", api.GetMqtt)
 		v.PUT("/system/mqtt", api.UpdateMqtt)
 
+		v.GET("/system/log", api.DownloadLog)
+
 	}
 
 }

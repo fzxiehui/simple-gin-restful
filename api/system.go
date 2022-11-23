@@ -238,3 +238,22 @@ func UpdateMqtt(c *gin.Context) {
 	return
 
 }
+
+func DownloadLog(c *gin.Context) {
+	// c.File("/root/work/log.txt")
+	var cmd string
+	cmd = "rm -rf /root/work/log.zip"
+	exec.Command("bash", "-c", cmd).Output()
+	// cmd = "cd /root/work && tar -zcvf log.tar.gz info.log errors.log"
+	cmd = "cd /root/work && zip log.zip *.log"
+	_, err := exec.Command("bash", "-c", cmd).Output()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": err.Error(),
+		})
+		return
+	}
+	c.File("/root/work/log.zip")
+	return
+
+}
