@@ -35,6 +35,21 @@ func V1API(r *gin.Engine) {
 
 		// system
 		v.GET("/system", api.GetSystem)
+
+		// system -> time zone
+		// v.GET("/system/timezone", api.GetTimeZone)
+		v.PUT("/system/timezone", api.UpdateTimeZone)
+
+
+
+		// system -> uart
+		// v.GET("/system/uart", api.GetUart)
+		v.PUT("/system/uart", api.UpdateUart)
+
+		// system -> mqtt
+		// v.GET("/system/mqtt", api.GetMqtt)
+		v.PUT("/system/mqtt", api.UpdateMqtt)
+
 	}
 
 }

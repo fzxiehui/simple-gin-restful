@@ -19,8 +19,19 @@ func Login(c *gin.Context) {
 
 	log.Println(auth.Username)
 	log.Println(auth.Password)
+	if auth.Username == "admin" && auth.Password == "admin" {
 
-	c.JSON(http.StatusOK, auth)
+		// set cookie
+		c.SetCookie("token", "admin", 3600, "/", "localhost", false, true)
+
+		c.JSON(http.StatusOK, gin.H{
+			"message": "login success",
+		})
+	} else {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"message": "login failed",
+		})
+	}
 }
 
 

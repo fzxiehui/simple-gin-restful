@@ -111,3 +111,130 @@ func GetSystem(c *gin.Context) {
 	c.JSON(http.StatusOK, system)
 	return
 }
+
+func UpdateTimeZone(c *gin.Context) {
+	var timezone model.TimeZone
+	c.BindJSON(&timezone)
+	var cmd string
+	cmd = "timedatectl set-timezone " + timezone.TimeZone
+	_, err := exec.Command("bash", "-c", cmd).Output()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": err.Error(),
+		})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"message": "update time zone success",
+	})
+	return
+}
+
+
+func UpdateUart(c *gin.Context) {
+	var uart model.Uart
+	c.BindJSON(&uart)
+	// Read config.json
+	var devConfig model.DevConfig
+	jsonConfig, err := utils.ReadJSONFile("/root/work/config.json")
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": err.Error(),
+		})
+		return
+	}
+	// map to struct
+	err = utils.MapToStruct(jsonConfig, &devConfig)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": err.Error(),
+		})
+		return
+	}
+	// update uart
+	devConfig.Uart = uart.Uart
+	devConfig.BaudRate = uart.BaudRate
+	devConfig.Interval = uart.Interval
+	devConfig.MaxError = uart.MaxError
+
+	// map to json
+	mapConfig := utils.StructToMap(devConfig)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": err.Error(),
+		})
+		return
+	}
+
+	// write to config.json
+	err = utils.WriteJSONFile("/root/work/config.json", mapConfig)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": err.Error(),
+		})
+		return
+	}
+
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "update uart success",
+	})
+	return
+}
+
+func UpdateMqtt(c *gin.Context) {
+	var mqtt model.Mqtt
+	c.BindJSON(&mqtt)
+	// Read config.json
+	var devConfig model.DevConfig
+	jsonConfig, err := utils.ReadJSONFile("/root/work/config.json")
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": err.Error(),
+		})
+		return
+	}
+
+	// map to struct
+	err = utils.MapToStruct(jsonConfig, &devConfig)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": err.Error(),
+		})
+		return
+	}
+
+	// update mqtt
+	devConfig.ClientId = mqtt.ClientId
+	devConfig.PubTopic = mqtt.PubTopic
+	devConfig.SubTopic = mqtt.SubTopic
+	devConfig.UpdateTopic = mqtt.UpdateTopic
+	devConfig.MqttHostUrl = mqtt.MqttHostUrl
+	devConfig.Username = mqtt.Username
+	devConfig.Passwd = mqtt.Passwd
+	devConfig.Port = mqtt.Port
+
+	// map to json
+	mapConfig := utils.StructToMap(devConfig)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": err.Error(),
+		})
+		return
+	}
+
+	// write to config.json
+	err = utils.WriteJSONFile("/root/work/config.json", mapConfig)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": err.Error(),
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "update mqtt success",
+	})
+	return
+
+}
