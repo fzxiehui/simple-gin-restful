@@ -3,7 +3,9 @@ package api
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
+	"os/exec"
 	// "log"
+	// "strings"
 
 	"github.com/fzxiehui/simple-gin-restful/model"
 	"github.com/fzxiehui/simple-gin-restful/utils"
@@ -11,6 +13,20 @@ import (
 )
 
 func GetSensor(c *gin.Context) {
+
+	// check if config.json exists
+	var cmd string
+	cmd = "ls /root/work/config.json"
+	_, err := exec.Command("sh", "-c", cmd).Output()
+	if err != nil {
+		cmd = "cd /root/work && eunuch init"
+		_, err := exec.Command("sh", "-c", cmd).Output()
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, 
+			gin.H{"message": err.Error()})
+			return
+		}
+	}
 
 	sensor, err := utils.ReadJSONFile("/root/work/config.json")
 	if err != nil {
@@ -35,9 +51,23 @@ func GetSensor(c *gin.Context) {
 // UpdateSensor 
 func UpdateSensor(c *gin.Context) {
 
+	// check if config.json exists
+	var cmd string
+	cmd = "ls /root/work/config.json"
+	_, err := exec.Command("sh", "-c", cmd).Output()
+	if err != nil {
+		cmd = "cd /root/work && eunuch init"
+		_, err := exec.Command("sh", "-c", cmd).Output()
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, 
+			gin.H{"message": err.Error()})
+			return
+		}
+	}
+
 	// var devConfig model.DevConfig
 	var devlist []model.Device
-	err := c.BindJSON(&devlist)
+	err = c.BindJSON(&devlist)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"message": err.Error()})
 		return

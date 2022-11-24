@@ -15,9 +15,21 @@ import (
 
 func GetSystem(c *gin.Context) {
 
-	// get time zone
+	// check if config.json exists
 	var cmd string
+	cmd = "ls /root/work/config.json"
+	_, err := exec.Command("sh", "-c", cmd).Output()
+	if err != nil {
+		cmd = "cd /root/work && eunuch init"
+		_, err := exec.Command("sh", "-c", cmd).Output()
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, 
+			gin.H{"message": err.Error()})
+			return
+		}
+	}
 
+	// get time zone
 	var system model.System
 
 	cmd = "timedatectl | grep 'Time zone' | awk '{print $3}'"
@@ -132,6 +144,21 @@ func UpdateTimeZone(c *gin.Context) {
 
 
 func UpdateUart(c *gin.Context) {
+
+	// check if config.json exists
+	var cmd string
+	cmd = "ls /root/work/config.json"
+	_, err := exec.Command("sh", "-c", cmd).Output()
+	if err != nil {
+		cmd = "cd /root/work && eunuch init"
+		_, err := exec.Command("sh", "-c", cmd).Output()
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, 
+			gin.H{"message": err.Error()})
+			return
+		}
+	}
+
 	var uart model.Uart
 	c.BindJSON(&uart)
 	// Read config.json
@@ -183,8 +210,25 @@ func UpdateUart(c *gin.Context) {
 }
 
 func UpdateMqtt(c *gin.Context) {
+
+
 	var mqtt model.Mqtt
 	c.BindJSON(&mqtt)
+
+	// check if config.json exists
+	var cmd string
+	cmd = "ls /root/work/config.json"
+	_, err := exec.Command("sh", "-c", cmd).Output()
+	if err != nil {
+		cmd = "cd /root/work && eunuch init"
+		_, err := exec.Command("sh", "-c", cmd).Output()
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, 
+			gin.H{"message": err.Error()})
+			return
+		}
+	}
+
 	// Read config.json
 	var devConfig model.DevConfig
 	jsonConfig, err := utils.ReadJSONFile("/root/work/config.json")
