@@ -202,6 +202,15 @@ func UpdateUart(c *gin.Context) {
 		return
 	}
 
+	// restart eunuch 
+	cmd = "supervisorctl restart gateway"
+	_, err = exec.Command("bash", "-c", cmd).Output()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "restart failed",
+		})
+		return
+	}
 
 	c.JSON(http.StatusOK, gin.H{
 		"message": "update uart success",
@@ -275,6 +284,17 @@ func UpdateMqtt(c *gin.Context) {
 		})
 		return
 	}
+
+	// restart eunuch 
+	cmd = "supervisorctl restart gateway"
+	_, err = exec.Command("bash", "-c", cmd).Output()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "restart failed",
+		})
+		return
+	}
+
 
 	c.JSON(http.StatusOK, gin.H{
 		"message": "update mqtt success",
