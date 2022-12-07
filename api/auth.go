@@ -19,10 +19,12 @@ func Login(c *gin.Context) {
 
 	log.Println(auth.Username)
 	log.Println(auth.Password)
+	// get header Referer from request
+	referer := c.Request.Header.Get("Referer")
 	if auth.Username == "admin" && auth.Password == "admin" {
 
 		// set cookie
-		c.SetCookie("token", "admin", 3600, "/", "localhost", false, true)
+		c.SetCookie("token", "admin", 3600, "/", referer, false, false)
 
 		c.JSON(http.StatusOK, gin.H{
 			"message": "login success",
