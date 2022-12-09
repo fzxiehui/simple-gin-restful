@@ -111,11 +111,15 @@ func Home(c *gin.Context) {
 		log.Println(err)
 	}
 
+	cpu = cpu / float64(cpu_thread_num)
 
+	if cpu > 100 {
+		cpu = 100
+	}
 
 	c.JSON(http.StatusOK, model.Home{
 		ProcessList: process_list.ProcessList,
-		Cpu: cpu/float64(cpu_thread_num),
+		Cpu: cpu,
 		Mem: mem,
 		Disk: disk,
 	})
