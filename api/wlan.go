@@ -60,7 +60,16 @@ func GetWlan(c *gin.Context) {
 	// TrimSpace 
 	wlan.Ip = strings.TrimSpace(string(out))
 
-
+	// get wlan password
+	cmd = "cat /root/wlan_password"
+	out, err = exec.Command("bash", "-c", cmd).Output()
+	if err != nil {
+		password := ""
+		wlan.Password = password
+	} else {
+		password := strings.TrimSpace(string(out))
+		wlan.Password = password
+	}
 
 	c.JSON(http.StatusOK, wlan)
 	return
@@ -108,6 +117,13 @@ func UpdateWlan(c *gin.Context) {
 		return
 	}
 
+	// save wlan password
+	cmd = "echo " + wlan.Password + " > /root/wlan_password"
+	out, err = exec.Command("bash", "-c", cmd).Output()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"message": "save wlan password failed"})
+		return
+	}
 
 	// return ok
 	c.JSON(http.StatusOK, gin.H{"message": "ok"})
