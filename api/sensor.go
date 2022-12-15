@@ -101,7 +101,7 @@ func UpdateSensor(c *gin.Context) {
 	}
 
 	// restart eunuch
-	cmd = "supervisorctl restart gateway"
+	cmd = "systemctl restart gateway"
 	_, err = exec.Command("bash", "-c", cmd).Output()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{

@@ -203,7 +203,7 @@ func UpdateUart(c *gin.Context) {
 	}
 
 	// restart eunuch 
-	cmd = "supervisorctl restart gateway"
+	cmd = "systemctl restart gateway"
 	_, err = exec.Command("bash", "-c", cmd).Output()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
@@ -286,7 +286,7 @@ func UpdateMqtt(c *gin.Context) {
 	}
 
 	// restart eunuch 
-	cmd = "supervisorctl restart gateway"
+	cmd = "systemctl restart gateway"
 	_, err = exec.Command("bash", "-c", cmd).Output()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
@@ -339,7 +339,7 @@ func DeleteLog(c *gin.Context) {
 
 func RestartGateway(c *gin.Context) {
 	var cmd string
-	cmd = "supervisorctl restart gateway"
+	cmd = "systemctl restart gateway"
 	_, err := exec.Command("bash", "-c", cmd).Output()
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
